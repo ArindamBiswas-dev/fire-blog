@@ -1,42 +1,32 @@
-import React from 'react';
-import {
-  ChakraProvider,
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
-  theme,
-} from '@chakra-ui/react';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
-import { Logo } from './Logo';
+import React from 'react'
+import { ChakraProvider } from '@chakra-ui/react'
+import theme from './theme'
+import Home from './pages/home/Home'
+import Layout from './components/Layout'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import NewPost from './pages/newpost/NewPost'
+import SinglePost from './pages/singlepost/SinglePost'
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh" p={3}>
-          <ColorModeSwitcher justifySelf="flex-end" />
-          <VStack spacing={8}>
-            <Logo h="40vmin" pointerEvents="none" />
-            <Text>
-              Edit <Code fontSize="xl">src/App.js</Code> and save to reload.
-            </Text>
-            <Link
-              color="teal.500"
-              href="https://chakra-ui.com"
-              fontSize="2xl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn Chakra
-            </Link>
-          </VStack>
-        </Grid>
-      </Box>
+      <Router>
+        <Switch>
+          <Layout>
+            <Route exact path="/">
+              <Home />
+            </Route>
+            <Route exact path="/new">
+              <NewPost />
+            </Route>
+            <Route exact path="/post/:id">
+              <SinglePost />
+            </Route>
+          </Layout>
+        </Switch>
+      </Router>
     </ChakraProvider>
-  );
+  )
 }
 
-export default App;
+export default App
