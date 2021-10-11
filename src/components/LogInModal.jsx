@@ -9,15 +9,29 @@ import {
   ModalOverlay,
 } from '@chakra-ui/modal'
 import { FaGoogle } from 'react-icons/fa'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { logInUser } from '../redux/user/userActions'
 
 function LogInModal({ onClose, isOpen }) {
   const initialRef = React.useRef()
+  const dispatch = useDispatch()
+  const user = useSelector(state => state.user.user)
+  const loading = useSelector(state => state.user.loading)
+
+  const onLogIn = () => {
+    console.log('log in')
+    dispatch(logInUser())
+  }
+
+  useEffect(() => {
+    if (!loading) onClose()
+  }, [loading, onClose])
 
   return (
     <Modal
       onClose={onClose}
-      isOpen={isOpen}
+      isOpen={isOpen && !user}
       isCentered
       initialFocusRef={initialRef}
     >
@@ -33,6 +47,9 @@ function LogInModal({ onClose, isOpen }) {
             w="full"
             mt="4"
             ref={initialRef}
+            onClick={onLogIn}
+            isLoading={loading}
+            loadingText="Signing in..."
           >
             Google
           </Button>

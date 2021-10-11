@@ -6,9 +6,18 @@ import { ImFire } from 'react-icons/im'
 import { FiLogOut } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import LogInModal from './LogInModal'
+import { useDispatch, useSelector } from 'react-redux'
+import { logOutUser } from '../redux/user/userActions'
 
 function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const user = useSelector(state => state.user.user)
+  const dispatch = useDispatch()
+
+  const signOut = () => {
+    console.log('sign out')
+    dispatch(logOutUser())
+  }
 
   return (
     <>
@@ -32,17 +41,23 @@ function Navbar() {
             </Box>
           </Flex>
           <Box ml="auto">
-            {/* <Button colorScheme="gray" onClick={onOpen}>
-              Log In
-            </Button> */}
-            <Link to="/new">
-              <Button colorScheme="pink">New Post</Button>
-            </Link>
-            <IconButton
-              aria-label="Search database"
-              icon={<FiLogOut />}
-              ml={4}
-            />
+            {!user ? (
+              <Button colorScheme="pink" onClick={onOpen}>
+                Sign In
+              </Button>
+            ) : (
+              <>
+                <Link to="/new">
+                  <Button colorScheme="pink">New Post</Button>
+                </Link>
+                <IconButton
+                  aria-label="Search database"
+                  icon={<FiLogOut />}
+                  ml={4}
+                  onClick={signOut}
+                />
+              </>
+            )}
           </Box>
         </Flex>
       </Flex>
