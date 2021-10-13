@@ -1,16 +1,74 @@
 import { Input } from '@chakra-ui/input'
 import { Box, Flex, Heading, Stack } from '@chakra-ui/layout'
-import { EditorState } from 'draft-js'
+import { convertToRaw, EditorState } from 'draft-js'
 import React, { useState } from 'react'
 import { Editor } from 'react-draft-wysiwyg'
 import './newpost.css'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { Button } from '@chakra-ui/button'
+import { db } from '../../firebase-config'
+import { collection, addDoc, serverTimestamp } from '@firebase/firestore'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  createPostError,
+  createPostRequest,
+  createPostSuccess,
+} from '../../redux/createpost/createpostActions'
+import cryptoRandomString from 'crypto-random-string'
+import { useToast } from '@chakra-ui/toast'
 
 function NewPost() {
-  const [editorSate, setEditorState] = useState(EditorState.createEmpty())
-  const onEditorStateChange = editorSate => {
-    setEditorState(editorSate)
+  const [editorState, setEditorState] = useState(EditorState.createEmpty())
+  const [title, setTitle] = useState('')
+  const blogsCollectionRef = collection(db, 'blogs')
+  const dispatch = useDispatch()
+  const user_id = useSelector(state => state.user.user)
+  const loading = useSelector(state => state.createpost.loading)
+  const toast = useToast()
+
+  const onEditorStateChange = editorState => {
+    setEditorState(editorState)
+  }
+
+  const addPost = async () => {
+    console.log('add post')
+
+    const slug = title
+      .toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '')
+    const randomSlugId = cryptoRandomString({ length: 5, type: 'url-safe' })
+
+    dispatch(createPostRequest())
+
+    try {
+      // add data to firebase
+      await addDoc(blogsCollectionRef, {
+        title: title,
+        content: convertToRaw(editorState.getCurrentContent()),
+        user_id: user_id,
+        slug: `${slug}-${randomSlugId}`,
+        timestamp: serverTimestamp(),
+      })
+      toast({
+        title: 'Post Added',
+        description: 'Your post publish successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+      dispatch(createPostSuccess())
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: 'Error',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+      dispatch(createPostError(error))
+    }
   }
 
   return (
@@ -25,6 +83,7 @@ function NewPost() {
         fontSize={25}
         fontWeight="semibold"
         _placeholder={{ fontWeight: 'medium' }}
+        onChange={e => setTitle(e.target.value)}
       />
       <Box
         w="full"
@@ -35,7 +94,7 @@ function NewPost() {
         mt={4}
       >
         <Editor
-          editorState={editorSate}
+          editorState={editorState}
           onEditorStateChange={onEditorStateChange}
           toolbarClassName="toolbar"
           editorClassName="editor"
@@ -43,7 +102,15 @@ function NewPost() {
         />
       </Box>
       <Flex>
-        <Button variant="solid" colorScheme="pink" w={200} ml="auto">
+        <Button
+          variant="solid"
+          colorScheme="pink"
+          w={200}
+          ml="auto"
+          onClick={addPost}
+          isLoading={loading}
+          loadingText="Publishing..."
+        >
           Publish
         </Button>
       </Flex>

@@ -6,7 +6,7 @@ import {
 
 const initialState = {
   loading: false,
-  posts: {},
+  post: null,
   error: '',
 }
 
@@ -21,7 +21,7 @@ const singlePostReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        posts: action.payload,
+        post: action.payload,
       }
     case FETCH_SINGLEPOST_ERROR:
       return {

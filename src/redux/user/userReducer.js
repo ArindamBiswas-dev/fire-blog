@@ -44,7 +44,7 @@ const userReducer = (state = initialState, action) => {
     case SET_USER_LOADING:
       return {
         loading: false,
-        user: null,
+        user: '',
         error: '',
         initialUserLoading: true,
       }

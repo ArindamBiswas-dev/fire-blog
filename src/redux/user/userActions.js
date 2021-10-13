@@ -43,7 +43,7 @@ export const setUserLoading = () => {
   }
 }
 
-export const logInUser = () => {
+export const logInUser = toast => {
   return dispatch => {
     // login initiate
     console.log('logInUser')
@@ -54,22 +54,50 @@ export const logInUser = () => {
         // console.log(response.user)
         const userId = response.user.reloadUserInfo.localId
         console.log(userId)
+        toast({
+          title: 'Account Login Successfully',
+          description: 'You have successfully logged in',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
         dispatch(registerUserSuccess(userId.toString()))
       })
       .catch(error => {
         console.log(error.message)
+        toast({
+          title: 'Error',
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        })
         dispatch(registerUserError(error))
       })
   }
 }
 
-export const logOutUser = () => {
+export const logOutUser = toast => {
   return dispatch => {
     signOut(auth)
       .then(res => {
         dispatch(registerUserSuccess(null))
+        toast({
+          title: 'Sign Out',
+          description: 'Sign out successful',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
       })
       .catch(error => {
+        toast({
+          title: 'Error',
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        })
         dispatch(registerUserError(error.message))
       })
   }

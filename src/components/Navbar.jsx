@@ -8,15 +8,17 @@ import { Link } from 'react-router-dom'
 import LogInModal from './LogInModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { logOutUser } from '../redux/user/userActions'
+import { useToast } from '@chakra-ui/toast'
 
 function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const user = useSelector(state => state.user.user)
   const dispatch = useDispatch()
+  const toast = useToast()
 
   const signOut = () => {
     console.log('sign out')
-    dispatch(logOutUser())
+    dispatch(logOutUser(toast))
   }
 
   return (
@@ -30,16 +32,19 @@ function Navbar() {
         w="full"
         backgroundColor="white"
         px={4}
+        zIndex="100"
       >
         <Flex maxW={1280} width="full" py={4} alignItems="center">
-          <Flex alignItems="center">
-            <Box color="red.400">
-              <ImFire fontSize="45" />
-            </Box>
-            <Box pt={1} ml={2}>
-              <Heading size="lg">FireBlog</Heading>
-            </Box>
-          </Flex>
+          <Link to="/">
+            <Flex alignItems="center">
+              <Box color="red.400">
+                <ImFire fontSize="45" />
+              </Box>
+              <Box pt={1} ml={2}>
+                <Heading size="lg">FireBlog</Heading>
+              </Box>
+            </Flex>
+          </Link>
           <Box ml="auto">
             {!user ? (
               <Button colorScheme="pink" onClick={onOpen}>

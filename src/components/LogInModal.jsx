@@ -8,6 +8,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal'
+import { useToast } from '@chakra-ui/react'
 import { FaGoogle } from 'react-icons/fa'
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -18,11 +19,16 @@ function LogInModal({ onClose, isOpen }) {
   const dispatch = useDispatch()
   const user = useSelector(state => state.user.user)
   const loading = useSelector(state => state.user.loading)
+  const toast = useToast()
 
   const onLogIn = () => {
     console.log('log in')
-    dispatch(logInUser())
+    dispatch(logInUser(toast))
   }
+
+  useEffect(() => {
+    console.log('modal')
+  }, [])
 
   useEffect(() => {
     if (!loading) onClose()
